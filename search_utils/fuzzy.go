@@ -65,3 +65,43 @@ func ScoreFuzzy(
 	}
 	return bestScore
 }
+
+func ScoreFuzzySingle(
+	termOrig string,
+	args *ScoreFuzzyArgs,
+) uint8 {
+	term := strings.ToLower(termOrig)
+	words := strings.Split(term, " ")
+	if len(words) < args.MinWordCount {
+		return 0
+	}
+	score := Similarity(args.QueryRunes, []rune(term), 0)
+	if score >= 180 {
+		return score
+	}
+	if len(words) < 1 {
+		return score
+	}
+	bestWordScore := uint8(0)
+	for wordI, word := range words {
+		wordScore := Similarity(args.QueryMainWord, []rune(word), 0)
+		if wordScore < 50 {
+			continue
+		}
+		if wordI == args.MainWordIndex {
+			wordScore -= 1
+		} else {
+			wordScore -= wordScore / 10
+		}
+		if wordScore > bestWordScore {
+			bestWordScore = wordScore
+		}
+	}
+	if bestWordScore < 50 {
+		return 0
+	}
+	if args.QueryWordCount > 1 {
+		bestWordScore = bestWordScore>>1 + bestWordScore/7
+	}
+	return bestWordScore
+}
