@@ -4,6 +4,8 @@ type DictSettings struct {
 	Symbol string `json:"symbol"`
 	Order  int    `json:"order"`
 	Hash   string `json:"hash"`
+
+	HideTermsHeader bool `json:"terms_header"`
 }
 
 func NewDictSettings(dic Dictionary, index int) *DictSettings {
@@ -11,5 +13,7 @@ func NewDictSettings(dic Dictionary, index int) *DictSettings {
 		Symbol: DefaultSymbol(dic.DictName()),
 		Order:  index,
 		Hash:   "",
+
+		HideTermsHeader: false,
 	}
 }
