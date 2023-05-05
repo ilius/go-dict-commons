@@ -42,24 +42,27 @@ func ComputeDistance(s1, s2 []rune) int {
 	// The one inside the loop is particularly costly.
 	_ = x[lenS1]
 	// fill in the rest
-	for i := 1; i <= lenS2; i++ {
-		prev := uint16(i)
+	lenS216 := uint16(lenS2)
+	for i := uint16(1); i <= lenS216; i++ {
+		prev := i
 		for j := 1; j <= lenS1; j++ {
-			current := x[j-1] // match
 			if s2[i-1] != s1[j-1] {
-				current = min(min(x[j-1]+1, prev+1), x[j]+1)
+				x[j-1], prev = prev, min3(x[j-1], prev, x[j])+1
+			} else { // match
+				x[j-1], prev = prev, x[j-1]
 			}
-			x[j-1] = prev
-			prev = current
 		}
 		x[lenS1] = prev
 	}
 	return int(x[lenS1])
 }
 
-func min(a, b uint16) uint16 {
-	if a < b {
-		return a
+func min3(a uint16, b uint16, c uint16) uint16 {
+	if a > b {
+		a = b
 	}
-	return b
+	if a > c {
+		a = c
+	}
+	return a
 }

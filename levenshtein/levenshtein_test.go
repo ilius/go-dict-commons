@@ -68,8 +68,6 @@ func TestUnicode(t *testing.T) {
 	}
 }
 
-// Benchmarks
-// ----------------------------------------------
 var sink int
 
 func BenchmarkSimple(b *testing.B) {
