@@ -16,13 +16,13 @@ const minLengthThreshold = 32
 // the input strings. See https://blog.golang.org/normalization
 // and the golang.org/x/text/unicode/norm package.
 // THE CALLER MUST MAKE SURE THAT: len(s1) <= len(s2)
-func ComputeDistance(s1, s2 []rune) int {
+func ComputeDistance(s1 []rune, s2 []rune) int {
 	lenS1 := len(s1)
 	lenS2 := len(s2)
 
 	// Init the row.
 	var x []uint16
-	if lenS1+1 > minLengthThreshold {
+	if lenS1 >= minLengthThreshold {
 		x = make([]uint16, lenS1+1)
 	} else {
 		// We make a small optimization here for small strings.
@@ -34,8 +34,9 @@ func ComputeDistance(s1, s2 []rune) int {
 	}
 
 	// we start from 1 because index 0 is already 0.
-	for i := 1; i < len(x); i++ {
-		x[i] = uint16(i)
+	xn := uint16(len(x))
+	for i := uint16(1); i < xn; i++ {
+		x[i] = i
 	}
 
 	// make a dummy bounds check to prevent the 2 bounds check down below.
