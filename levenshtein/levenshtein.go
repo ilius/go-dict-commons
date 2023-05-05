@@ -4,11 +4,6 @@
 // https://gist.github.com/andrei-m/982927#gistcomment-1931258
 package levenshtein
 
-// minLengthThreshold is the length of the string beyond which
-// an allocation will be made. Strings smaller than this will be
-// zero alloc.
-const minLengthThreshold = 32
-
 // ComputeDistance computes the levenshtein distance between the two
 // strings passed as an argument. The return value is the levenshtein distance
 //
@@ -16,26 +11,23 @@ const minLengthThreshold = 32
 // the input strings. See https://blog.golang.org/normalization
 // and the golang.org/x/text/unicode/norm package.
 // THE CALLER MUST MAKE SURE THAT: len(s1) <= len(s2)
-func ComputeDistance(s1 []rune, s2 []rune) int {
+// buff can be nil, but it's best to have an array longer than
+// all given strings to avoid re-allocation of memory.
+// Make sure you don't use the same buff in multiple goroutines
+func ComputeDistance(s1 []rune, s2 []rune, buff []uint16) int {
 	lenS1 := len(s1)
 	lenS2 := len(s2)
 
 	// Init the row.
 	var x []uint16
-	if lenS1 >= minLengthThreshold {
+	if lenS1 >= len(buff) {
 		x = make([]uint16, lenS1+1)
 	} else {
-		// We make a small optimization here for small strings.
-		// Because a slice of constant length is effectively an array,
-		// it does not allocate. So we can re-slice it to the right length
-		// as long as it is below a desired threshold.
-		x = make([]uint16, minLengthThreshold)
-		x = x[:lenS1+1]
+		x = buff[:lenS1+1]
 	}
 
-	// we start from 1 because index 0 is already 0.
-	xn := uint16(len(x))
-	for i := uint16(1); i < xn; i++ {
+	xn := uint16(lenS1) + 1
+	for i := uint16(0); i < xn; i++ {
 		x[i] = i
 	}
 

@@ -4,7 +4,13 @@ import (
 	"github.com/ilius/go-dict-commons/levenshtein"
 )
 
-func Similarity(r1 []rune, r2 []rune, subtract uint8) uint8 {
+// Make sure you don't use the same buff in multiple goroutines
+func Similarity(
+	r1 []rune,
+	r2 []rune,
+	buff []uint16,
+	subtract uint8,
+) uint8 {
 	if len(r1) > len(r2) {
 		r1, r2 = r2, r1
 	}
@@ -14,7 +20,7 @@ func Similarity(r1 []rune, r2 []rune, subtract uint8) uint8 {
 		// this optimization assumes we want to ignore below %66 similarity
 		return 0
 	}
-	score := uint8(200 * (n - levenshtein.ComputeDistance(r1, r2)) / n)
+	score := uint8(200 * (n - levenshtein.ComputeDistance(r1, r2, buff)) / n)
 	if score <= subtract {
 		return 0
 	}

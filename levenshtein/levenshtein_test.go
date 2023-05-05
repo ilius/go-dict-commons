@@ -5,6 +5,8 @@ import (
 	"unicode/utf8"
 )
 
+var buff = make([]uint16, 100)
+
 func computeDistanceHL(a string, b string) int {
 	if len(a) == 0 {
 		return utf8.RuneCountInString(b)
@@ -17,7 +19,7 @@ func computeDistanceHL(a string, b string) int {
 	if a == b {
 		return 0
 	}
-	return ComputeDistance([]rune(a), []rune(b))
+	return ComputeDistance([]rune(a), []rune(b), buff)
 }
 
 func TestSanity(t *testing.T) {
