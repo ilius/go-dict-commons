@@ -19,6 +19,8 @@ func ScoreFuzzy(
 	buff []uint16,
 ) uint8 {
 	bestScore := uint8(0)
+	queryMainWord := args.QueryMainWord
+	mainWordIndex := args.MainWordIndex
 	for termI, termOrig := range terms {
 		subtract := uint8(3)
 		if termI < 3 {
@@ -39,32 +41,34 @@ func ScoreFuzzy(
 				continue
 			}
 		}
-		if len(words) > 1 {
-			bestWordScore := uint8(0)
-			for wordI, word := range words {
-				wordScore := Similarity(args.QueryMainWord, []rune(word), buff, subtract)
-				if wordScore < 50 {
-					continue
-				}
-				if wordI == args.MainWordIndex {
-					wordScore -= 1
-				} else {
-					wordScore -= wordScore / 10
-				}
-				if wordScore > bestWordScore {
-					bestWordScore = wordScore
-				}
-			}
-			if bestWordScore < 50 {
+		if len(words) == 1 {
+			continue
+		}
+		bestWordScore := uint8(0)
+		for wordI, word := range words {
+			wordScore := Similarity(queryMainWord, []rune(word), buff, subtract)
+			if wordScore < 50 {
 				continue
 			}
-			if args.QueryWordCount > 1 {
-				bestWordScore = bestWordScore>>1 + bestWordScore/7
+			if wordI == mainWordIndex {
+				wordScore -= 1
+			} else {
+				wordScore -= wordScore / 10
 			}
-			if bestWordScore > bestScore {
-				bestScore = bestWordScore
+			if wordScore > bestWordScore {
+				bestWordScore = wordScore
 			}
 		}
+		if bestWordScore < 50 {
+			continue
+		}
+		if args.QueryWordCount > 1 {
+			bestWordScore = bestWordScore>>1 + bestWordScore/7
+		}
+		if bestWordScore > bestScore {
+			bestScore = bestWordScore
+		}
+
 	}
 	return bestScore
 }
