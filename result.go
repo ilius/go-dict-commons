@@ -4,10 +4,17 @@ type SearchResultIface interface {
 	Terms() []string
 	Score() uint8
 	DictName() string
-	DefinitionsHTML() []string
+	DefinitionsHTML(flags uint32) []string
 	ResourceDir() string
 	EntryIndex() uint64
 }
+
+const (
+	ResultFlag_FixAudio = 1 << iota
+	ResultFlag_FixFileSrc
+	ResultFlag_FixWordLink
+	ResultFlag_ColorMapping
+)
 
 type SearchResultItem struct {
 	Data []byte
