@@ -14,6 +14,7 @@ const (
 	ResultFlag_FixFileSrc
 	ResultFlag_FixWordLink
 	ResultFlag_ColorMapping
+	ResultFlag_Web
 )
 
 type SearchResultItem struct {
