@@ -4,7 +4,7 @@ type SearchResultIface interface {
 	Terms() []string
 	Score() uint8
 	DictName() string
-	DefinitionsHTML(flags uint32) []string
+	DefinitionsHTML() []string
 	ResourceDir() string
 	EntryIndex() uint64
 }
