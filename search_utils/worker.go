@@ -28,7 +28,7 @@ func RunWorkers(
 
 	step := N / workerCount
 	start := 0
-	for i := 0; i < workerCount-1; i++ {
+	for range workerCount - 1 {
 		end := start + step
 		go sender(start, end)
 		start = end
@@ -37,7 +37,7 @@ func RunWorkers(
 
 	results := []*common.SearchResultLow{}
 	timeoutCh := time.NewTimer(timeout)
-	for i := 0; i < workerCount; i++ {
+	for range workerCount {
 		select {
 		case wRes := <-ch:
 			results = append(results, wRes...)
