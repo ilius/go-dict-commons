@@ -8,16 +8,16 @@ import (
 )
 
 func RunWorkers(
-	N int,
+	count int,
 	workerCount int,
 	timeout time.Duration,
 	worker func(int, int) []*common.SearchResultLow,
 ) []*common.SearchResultLow {
 	if workerCount < 2 {
-		return worker(0, N)
+		return worker(0, count)
 	}
-	if N < 2*workerCount {
-		return worker(0, N)
+	if count < 2*workerCount {
+		return worker(0, count)
 	}
 
 	ch := make(chan []*common.SearchResultLow, workerCount)
@@ -26,14 +26,14 @@ func RunWorkers(
 		ch <- worker(start, end)
 	}
 
-	step := N / workerCount
+	step := count / workerCount
 	start := 0
 	for range workerCount - 1 {
 		end := start + step
 		go sender(start, end)
 		start = end
 	}
-	go sender(start, N)
+	go sender(start, count)
 
 	results := []*common.SearchResultLow{}
 	timeoutCh := time.NewTimer(timeout)
