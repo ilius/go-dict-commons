@@ -35,8 +35,8 @@ func ComputeDistance(s1 []rune, s2 []rune, buff []uint16) int {
 	// The one inside the loop is particularly costly.
 	_ = x[lenS1]
 	// fill in the rest
-	lenS216 := uint16(lenS2)
-	for i := uint16(1); i <= lenS216; i++ {
+	lenS2_i16 := uint16(lenS2)
+	for i := uint16(1); i <= lenS2_i16; i++ {
 		prev := i
 		for j := 1; j <= lenS1; j++ {
 			if s2[i-1] != s1[j-1] {
