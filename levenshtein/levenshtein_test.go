@@ -19,119 +19,141 @@ func computeDistanceHL(a string, b string) int {
 	if a == b {
 		return 0
 	}
-	return int(ComputeDistance([]rune(a), []rune(b), buff))
+	ar := []rune(a)
+	br := []rune(b)
+	if len(ar) > len(br) {
+		ar, br = br, ar
+	}
+	return int(ComputeDistance(ar, br, buff))
 }
 
 func TestSanity(t *testing.T) {
 	tests := []struct {
-		a    string
-		b    string
-		want int
+		a string
+		b string
+		n int
 	}{
 		{
-			a:    "",
-			b:    "hello",
-			want: 5,
+			a: "",
+			b: "hello",
+			n: 5,
 		},
 		{
-			a:    "hello",
-			b:    "",
-			want: 5,
+			a: "hello",
+			b: "",
+			n: 5,
 		},
 		{
-			a:    "hello",
-			b:    "hello",
-			want: 0,
+			a: "hello",
+			b: "hello",
+			n: 0,
 		},
 		{
-			a:    "ab",
-			b:    "aa",
-			want: 1,
+			a: "ab",
+			b: "aa",
+			n: 1,
 		},
 		{
-			a:    "ab",
-			b:    "ba",
-			want: 2,
+			a: "ab",
+			b: "ba",
+			n: 2,
 		},
 		{
-			a:    "ab",
-			b:    "aaa",
-			want: 2,
+			a: "ab",
+			b: "aaa",
+			n: 2,
 		},
 		{
-			a:    "bbb",
-			b:    "a",
-			want: 3,
+			a: "bbb",
+			b: "a",
+			n: 3,
 		},
 		{
-			a:    "kitten",
-			b:    "sitting",
-			want: 3,
+			a: "kitten",
+			b: "sitting",
+			n: 3,
 		},
 		{
-			a:    "distance",
-			b:    "difference",
-			want: 5,
+			a: "distance",
+			b: "difference",
+			n: 5,
 		},
 		{
-			a:    "levenshtein",
-			b:    "frankenstein",
-			want: 6,
+			a: "levenshtein",
+			b: "frankenstein",
+			n: 6,
 		},
 		{
-			a:    "resume and cafe",
-			b:    "resumes and cafes",
-			want: 2,
+			a: "resume and cafe",
+			b: "resumes and cafes",
+			n: 2,
 		},
 		{
-			a:    "a very long string that is meant to exceed",
-			b:    "another very long string that is meant to exceed",
-			want: 6,
+			a: "a very long string that is meant to exceed",
+			b: "another very long string that is meant to exceed",
+			n: 6,
+		},
+		{
+			a: "signature",
+			b: "sigature",
+			n: 1,
 		},
 	}
-	for i, d := range tests {
-		n := computeDistanceHL(d.a, d.b)
-		if n != d.want {
-			t.Errorf("Test[%d]: ComputeDistance(%q,%q) returned %v, want %v",
-				i, d.a, d.b, n, d.want)
+	for index, test := range tests {
+		actual := computeDistanceHL(test.a, test.b)
+		if actual != test.n {
+			t.Errorf(
+				"Test[%d]: ComputeDistance(%q,%q) returned %v, want %v",
+				index,
+				test.a,
+				test.b,
+				actual,
+				test.n,
+			)
 		}
 	}
 }
 
 func TestUnicode(t *testing.T) {
 	tests := []struct {
-		a    string
-		b    string
-		want int
+		a string
+		b string
+		n int
 	}{
 		// Testing acutes and umlauts
 		{
-			a:    "resumé and café",
-			b:    "resumés and cafés",
-			want: 2,
+			a: "resumé and café",
+			b: "resumés and cafés",
+			n: 2,
 		},
 		{
-			a:    "resume and cafe",
-			b:    "resumé and café",
-			want: 2,
+			a: "resume and cafe",
+			b: "resumé and café",
+			n: 2,
 		},
 		{
-			a:    "Hafþór Júlíus Björnsson",
-			b:    "Hafþor Julius Bjornsson",
-			want: 4,
+			a: "Hafþór Júlíus Björnsson",
+			b: "Hafþor Julius Bjornsson",
+			n: 4,
 		},
 		// Only 2 characters are less in the 2nd string
 		{
-			a:    "།་གམ་འས་པ་་མ།",
-			b:    "།་གམའས་པ་་མ",
-			want: 2,
+			a: "།་གམ་འས་པ་་མ།",
+			b: "།་གམའས་པ་་མ",
+			n: 2,
 		},
 	}
-	for i, d := range tests {
-		n := computeDistanceHL(d.a, d.b)
-		if n != d.want {
-			t.Errorf("Test[%d]: ComputeDistance(%q,%q) returned %v, want %v",
-				i, d.a, d.b, n, d.want)
+	for index, test := range tests {
+		actual := computeDistanceHL(test.a, test.b)
+		if actual != test.n {
+			t.Errorf(
+				"Test[%d]: ComputeDistance(%q,%q) returned %v, want %v",
+				index,
+				test.a,
+				test.b,
+				actual,
+				test.n,
+			)
 		}
 	}
 }
