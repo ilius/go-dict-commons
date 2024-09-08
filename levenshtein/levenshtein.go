@@ -1,5 +1,10 @@
 // Package levenshtein is a Go implementation to calculate Levenshtein Distance.
 //
+// Copyright (C) 2024 Saeed Rasooli
+// Copyright (c) 2015 Agniva De Sarker
+
+// Based on https://github.com/agnivade/levenshtein/blob/master/levenshtein.go
+
 // Implementation taken from
 // https://gist.github.com/andrei-m/982927#gistcomment-1931258
 package levenshtein
@@ -10,7 +15,7 @@ package levenshtein
 // Works on runes (Unicode code points) but does not normalize
 // the input strings. See https://blog.golang.org/normalization
 // and the golang.org/x/text/unicode/norm package.
-// THE CALLER MUST MAKE SURE THAT: len(s1) <= len(s2)
+// THE CALLER MUST MAKE SURE THAT: len(s1) <= len(s2) <= 0xffff
 // buff can be nil, but it's best to have an array longer than
 // all given strings to avoid re-allocation of memory.
 // Make sure you don't use the same buff in multiple goroutines
