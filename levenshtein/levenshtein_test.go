@@ -7,38 +7,87 @@ import (
 
 var buff = make([]uint16, 100)
 
-func computeDistanceHL(a string, b string) uint16 {
+func computeDistanceHL(a string, b string) int {
 	if len(a) == 0 {
-		return uint16(utf8.RuneCountInString(b))
+		return utf8.RuneCountInString(b)
 	}
 
 	if len(b) == 0 {
-		return uint16(utf8.RuneCountInString(a))
+		return utf8.RuneCountInString(a)
 	}
 
 	if a == b {
 		return 0
 	}
-	return ComputeDistance([]rune(a), []rune(b), buff)
+	return int(ComputeDistance([]rune(a), []rune(b), buff))
 }
 
 func TestSanity(t *testing.T) {
 	tests := []struct {
-		a, b string
-		want uint16
+		a    string
+		b    string
+		want int
 	}{
-		{"", "hello", 5},
-		{"hello", "", 5},
-		{"hello", "hello", 0},
-		{"ab", "aa", 1},
-		{"ab", "ba", 2},
-		{"ab", "aaa", 2},
-		{"bbb", "a", 3},
-		{"kitten", "sitting", 3},
-		{"distance", "difference", 5},
-		{"levenshtein", "frankenstein", 6},
-		{"resume and cafe", "resumes and cafes", 2},
-		{"a very long string that is meant to exceed", "another very long string that is meant to exceed", 6},
+		{
+			a:    "",
+			b:    "hello",
+			want: 5,
+		},
+		{
+			a:    "hello",
+			b:    "",
+			want: 5,
+		},
+		{
+			a:    "hello",
+			b:    "hello",
+			want: 0,
+		},
+		{
+			a:    "ab",
+			b:    "aa",
+			want: 1,
+		},
+		{
+			a:    "ab",
+			b:    "ba",
+			want: 2,
+		},
+		{
+			a:    "ab",
+			b:    "aaa",
+			want: 2,
+		},
+		{
+			a:    "bbb",
+			b:    "a",
+			want: 3,
+		},
+		{
+			a:    "kitten",
+			b:    "sitting",
+			want: 3,
+		},
+		{
+			a:    "distance",
+			b:    "difference",
+			want: 5,
+		},
+		{
+			a:    "levenshtein",
+			b:    "frankenstein",
+			want: 6,
+		},
+		{
+			a:    "resume and cafe",
+			b:    "resumes and cafes",
+			want: 2,
+		},
+		{
+			a:    "a very long string that is meant to exceed",
+			b:    "another very long string that is meant to exceed",
+			want: 6,
+		},
 	}
 	for i, d := range tests {
 		n := computeDistanceHL(d.a, d.b)
@@ -51,15 +100,32 @@ func TestSanity(t *testing.T) {
 
 func TestUnicode(t *testing.T) {
 	tests := []struct {
-		a, b string
-		want uint16
+		a    string
+		b    string
+		want int
 	}{
 		// Testing acutes and umlauts
-		{"resumé and café", "resumés and cafés", 2},
-		{"resume and cafe", "resumé and café", 2},
-		{"Hafþór Júlíus Björnsson", "Hafþor Julius Bjornsson", 4},
+		{
+			a:    "resumé and café",
+			b:    "resumés and cafés",
+			want: 2,
+		},
+		{
+			a:    "resume and cafe",
+			b:    "resumé and café",
+			want: 2,
+		},
+		{
+			a:    "Hafþór Júlíus Björnsson",
+			b:    "Hafþor Julius Bjornsson",
+			want: 4,
+		},
 		// Only 2 characters are less in the 2nd string
-		{"།་གམ་འས་པ་་མ།", "།་གམའས་པ་་མ", 2},
+		{
+			a:    "།་གམ་འས་པ་་མ།",
+			b:    "།་གམའས་པ་་མ",
+			want: 2,
+		},
 	}
 	for i, d := range tests {
 		n := computeDistanceHL(d.a, d.b)
@@ -70,23 +136,44 @@ func TestUnicode(t *testing.T) {
 	}
 }
 
-var sink uint16
+var sink int
 
 func BenchmarkSimple(b *testing.B) {
 	tests := []struct {
-		a, b string
+		a    string
+		b    string
 		name string
 	}{
 		// ASCII
-		{"levenshtein", "frankenstein", "ASCII"},
+		{
+			a:    "levenshtein",
+			b:    "frankenstein",
+			name: "ASCII",
+		},
 		// Testing acutes and umlauts
-		{"resumé and café", "resumés and cafés", "French"},
-		{"Hafþór Júlíus Björnsson", "Hafþor Julius Bjornsson", "Nordic"},
-		{"a very long string that is meant to exceed", "another very long string that is meant to exceed", "long string"},
+		{
+			a:    "resumé and café",
+			b:    "resumés and cafés",
+			name: "French",
+		},
+		{
+			a:    "Hafþór Júlíus Björnsson",
+			b:    "Hafþor Julius Bjornsson",
+			name: "Nordic",
+		},
+		{
+			a:    "a very long string that is meant to exceed",
+			b:    "another very long string that is meant to exceed",
+			name: "long string",
+		},
 		// Only 2 characters are less in the 2nd string
-		{"།་གམ་འས་པ་་མ།", "།་གམའས་པ་་མ", "Tibetan"},
+		{
+			a:    "།་གམ་འས་པ་་མ།",
+			b:    "།་གམའས་པ་་མ",
+			name: "Tibetan",
+		},
 	}
-	tmp := uint16(0)
+	tmp := 0
 	for _, test := range tests {
 		b.Run(test.name, func(b *testing.B) {
 			for range b.N {
