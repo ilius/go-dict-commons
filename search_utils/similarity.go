@@ -17,12 +17,17 @@ func Similarity(
 	}
 	// now len(r1) <= len(r2)
 	n := len(r2)
-	if len(r1) < (n - n/3) {
+	if len(r1) < n-n/3 {
 		// this optimization assumes we want to ignore below %66 similarity
 		return 0
 	}
 	n16 := uint16(n)
-	score := uint8(200 * (n16 - levenshtein.ComputeDistance(r1, r2, buff)) / n16)
+	dist := levenshtein.ComputeDistance(r1, r2, buff)
+	if dist > n16/3 {
+		// this optimization assumes we want to ignore below %66 similarity
+		return 0
+	}
+	score := uint8(200 * (n16 - dist) / n16)
 	if score <= subtract {
 		return 0
 	}
