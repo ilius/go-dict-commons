@@ -20,7 +20,8 @@ func Similarity(
 		// this optimization assumes we want to ignore below %66 similarity
 		return 0
 	}
-	score := uint8(200 * (n - levenshtein.ComputeDistance(r1, r2, buff)) / n)
+	n16 := uint16(n)
+	score := uint8(200 * (n16 - levenshtein.ComputeDistance(r1, r2, buff)) / n16)
 	if score <= subtract {
 		return 0
 	}

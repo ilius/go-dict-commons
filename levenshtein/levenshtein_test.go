@@ -7,13 +7,13 @@ import (
 
 var buff = make([]uint16, 100)
 
-func computeDistanceHL(a string, b string) int {
+func computeDistanceHL(a string, b string) uint16 {
 	if len(a) == 0 {
-		return utf8.RuneCountInString(b)
+		return uint16(utf8.RuneCountInString(b))
 	}
 
 	if len(b) == 0 {
-		return utf8.RuneCountInString(a)
+		return uint16(utf8.RuneCountInString(a))
 	}
 
 	if a == b {
@@ -25,7 +25,7 @@ func computeDistanceHL(a string, b string) int {
 func TestSanity(t *testing.T) {
 	tests := []struct {
 		a, b string
-		want int
+		want uint16
 	}{
 		{"", "hello", 5},
 		{"hello", "", 5},
@@ -52,7 +52,7 @@ func TestSanity(t *testing.T) {
 func TestUnicode(t *testing.T) {
 	tests := []struct {
 		a, b string
-		want int
+		want uint16
 	}{
 		// Testing acutes and umlauts
 		{"resumé and café", "resumés and cafés", 2},
@@ -70,7 +70,7 @@ func TestUnicode(t *testing.T) {
 	}
 }
 
-var sink int
+var sink uint16
 
 func BenchmarkSimple(b *testing.B) {
 	tests := []struct {
@@ -86,7 +86,7 @@ func BenchmarkSimple(b *testing.B) {
 		// Only 2 characters are less in the 2nd string
 		{"།་གམ་འས་པ་་མ།", "།་གམའས་པ་་མ", "Tibetan"},
 	}
-	tmp := 0
+	tmp := uint16(0)
 	for _, test := range tests {
 		b.Run(test.name, func(b *testing.B) {
 			for range b.N {

@@ -14,7 +14,7 @@ package levenshtein
 // buff can be nil, but it's best to have an array longer than
 // all given strings to avoid re-allocation of memory.
 // Make sure you don't use the same buff in multiple goroutines
-func ComputeDistance(s1 []rune, s2 []rune, buff []uint16) int {
+func ComputeDistance(s1 []rune, s2 []rune, buff []uint16) uint16 {
 	lenS1 := len(s1)
 	lenS2 := len(s2)
 
@@ -47,7 +47,7 @@ func ComputeDistance(s1 []rune, s2 []rune, buff []uint16) int {
 		}
 		x[lenS1] = prev
 	}
-	return int(x[lenS1])
+	return x[lenS1]
 }
 
 func min3(a uint16, b uint16, c uint16) uint16 {
