@@ -4,6 +4,7 @@ import (
 	"github.com/ilius/go-dict-commons/levenshtein"
 )
 
+// Similarity calculates a similarity score between 0 and 200
 // Make sure you don't use the same buff in multiple goroutines
 func Similarity(
 	r1 []rune,
