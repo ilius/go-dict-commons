@@ -4,9 +4,11 @@ import "strings"
 
 func ScoreStartsWith(terms []string, query string) uint8 {
 	bestScore := uint8(0)
-	for termI, termOrig := range terms {
-		term := strings.ToLower(termOrig)
-		if !strings.HasPrefix(term, query) {
+	for termI, term := range terms {
+		if len(term) < len(query) {
+			continue
+		}
+		if strings.ToLower(term[0:len(query)]) != query {
 			continue
 		}
 		subtract := uint8(3)
