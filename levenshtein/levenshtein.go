@@ -41,13 +41,14 @@ func ComputeDistance(s1 []rune, s2 []rune, buff []uint16) uint16 {
 	_ = x[lenS1]
 	// fill in the rest
 	lenS2_i16 := uint16(lenS2)
-	for i := uint16(1); i <= lenS2_i16; i++ {
-		prev := i
-		for j := 1; j <= lenS1; j++ {
-			if s2[i-1] != s1[j-1] {
-				x[j-1], prev = prev, min3(x[j-1], prev, x[j])+1
+	prev := uint16(0)
+	for i := uint16(0); i < lenS2_i16; i++ {
+		prev = i + 1
+		for j := 0; j < lenS1; j++ {
+			if s2[i] != s1[j] {
+				x[j], prev = prev, min3(x[j], prev, x[j+1])+1
 			} else { // match
-				x[j-1], prev = prev, x[j-1]
+				x[j], prev = prev, x[j]
 			}
 		}
 		x[lenS1] = prev
@@ -60,7 +61,7 @@ func min3(a uint16, b uint16, c uint16) uint16 {
 		a = b
 	}
 	if a > c {
-		a = c
+		return c
 	}
 	return a
 }
