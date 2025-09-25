@@ -25,9 +25,9 @@ func TestScoreWordMatch(t *testing.T) {
 	test([]string{"TEST"}, "test 123", 189)
 	test([]string{"tESt"}, "112 test", 188)
 
-	test([]string{"test"}, "TESt", 200)
-	test([]string{"test"}, "Test 123", 189)
-	test([]string{"test"}, "112 tesT", 188)
+	test([]string{"test"}, "TESt", 0)
+	test([]string{"test"}, "Test 123", 0)
+	test([]string{"test"}, "112 tesT", 0)
 
 	test([]string{"test word"}, "test word", 200)
 	test([]string{"test word"}, "test", 199)

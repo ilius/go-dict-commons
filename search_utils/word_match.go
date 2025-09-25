@@ -6,7 +6,6 @@ import (
 
 // ScoreWordMatch returns a score based on exact word match between query words and term words
 func ScoreWordMatch(terms []string, query string) uint8 {
-	query = strings.ToLower(query)
 	queryWords := strings.Split(query, " ")
 	if len(queryWords) == 1 {
 		// optmization, should not change the result
