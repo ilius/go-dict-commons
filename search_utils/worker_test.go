@@ -87,7 +87,7 @@ func TestRunWorkersTimeout(t *testing.T) {
 		2,
 		time.Millisecond,
 		func(i1 int, i2 int) []*commons.SearchResultLow {
-			time.Sleep(time.Millisecond)
+			time.Sleep(2 * time.Millisecond)
 			return []*commons.SearchResultLow{
 				{F_Terms: []string{"a"}, F_Score: uint8(i1)},
 			}
