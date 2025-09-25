@@ -33,5 +33,4 @@ func TestScoreStartsWith(t *testing.T) {
 	test([]string{"x", "test word", "testing"}, "test word", 199)
 	test([]string{"x", "test word", "testing"}, "test", 195)
 	test([]string{"x", "y", "test word", "testing"}, "test", 194)
-
 }
