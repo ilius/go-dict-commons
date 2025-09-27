@@ -1,12 +1,14 @@
 package search_utils
 
-import "strings"
+import (
+	"strings"
+)
 
 type ScoreFuzzyArgs struct {
 	Query          string
 	QueryRunes     []rune
 	QueryMainWord  []rune
-	QueryWordCount int
+	QueryWordCount int // number of words in query, excluding * (indicates any word)
 	MinWordCount   int
 	MainWordIndex  int
 }
@@ -44,9 +46,6 @@ func ScoreFuzzy(
 				continue
 			}
 		}
-		if len(words) == 1 { // no need to look at the words
-			continue
-		}
 		bestWordScore := uint8(0)
 		for wordI, word := range words {
 			wordScore := Similarity(queryMainWord, []rune(word), buff, subtract)
@@ -57,8 +56,8 @@ func ScoreFuzzy(
 				wordScore -= 1
 				// just to differentiate between word match and whole term match
 			} else {
-				// matching word's position is not the same as query, %10 penalty
-				wordScore -= wordScore / 10
+				// matching word's position is not the same as query, %5 penalty
+				wordScore -= wordScore / 20
 			}
 			if wordScore > bestWordScore {
 				bestWordScore = wordScore
@@ -68,57 +67,14 @@ func ScoreFuzzy(
 			continue
 		}
 		if args.QueryWordCount > 1 {
-			// Fastest way to make an int become about 2/3 of its current value
-			// in this case about %64 because 1/2 + 1/7 ~= 0.642
-			// Tip: Python prioritizes + over >> so you need to add ()
-			bestWordScore = bestWordScore>>1 + bestWordScore/7
+			// To make sure word scores don't precede small misspells on two word query
+			// for example when you type "gold lef", term "gold leaf" should come
+			// before term "gold"
+			bestWordScore = uint8(float64(bestWordScore)*0.87) - uint8(len(words))
 		}
 		if bestWordScore > bestScore {
 			bestScore = bestWordScore
 		}
 	}
 	return bestScore
-}
-
-// ScoreFuzzySingle ...
-// Make sure you don't use the same buff in multiple goroutines
-func ScoreFuzzySingle(
-	termOrig string,
-	args *ScoreFuzzyArgs,
-	buff []uint16,
-) uint8 {
-	term := strings.ToLower(termOrig)
-	words := strings.Split(term, " ")
-	if len(words) < args.MinWordCount {
-		return 0
-	}
-	score := Similarity(args.QueryRunes, []rune(term), buff, 0)
-	if score >= 180 {
-		return score
-	}
-	if len(words) < 1 {
-		return score
-	}
-	bestWordScore := uint8(0)
-	for wordI, word := range words {
-		wordScore := Similarity(args.QueryMainWord, []rune(word), buff, 0)
-		if wordScore < 50 {
-			continue
-		}
-		if wordI == args.MainWordIndex {
-			wordScore -= 1
-		} else {
-			wordScore -= wordScore / 10
-		}
-		if wordScore > bestWordScore {
-			bestWordScore = wordScore
-		}
-	}
-	if bestWordScore < 50 {
-		return 0
-	}
-	if args.QueryWordCount > 1 {
-		bestWordScore = bestWordScore>>1 + bestWordScore/7
-	}
-	return bestWordScore
 }

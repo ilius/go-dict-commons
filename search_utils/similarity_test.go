@@ -38,5 +38,6 @@ func TestSimilarity1(t *testing.T) {
 	// Only 2 characters are less in the 2nd string
 	test("།་གམ་འས་པ་་མ།", "།་གམའས་པ་་མ", 177)
 
+	test("gold leaf", "gold lef", 177)
 	// test("", "", 0)
 }
