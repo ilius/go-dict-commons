@@ -27,6 +27,7 @@ func TestScoreFuzzy1(t *testing.T) {
 		{Query: "signature", Term: "signat", Score: 66},
 		{Query: "signature", Term: "signa", Score: 0},
 		{Query: "signature", Term: "sign", Score: 0},
+		{Query: "gold", Term: "gold leaf", Score: 142},
 		{Query: "gold leaf", Term: "gold lef", Score: 154},
 		{Query: "gold lef", Term: "gold leaf", Score: 154},
 		{Query: "gold lef", Term: "gold", Score: 143}, // 144 in v0.6.0
@@ -48,6 +49,51 @@ func TestScoreFuzzy1(t *testing.T) {
 		if score != tc.Score {
 			t.Errorf(
 				"TestScoreFuzzy: score=%v != %v, query=%#v, term=%#v",
+				score,
+				tc.Score,
+				query,
+				term,
+			)
+			t.Fail()
+		}
+		// t.Logf("TestScoreFuzzy: score=%v, query=%#v, term=%#v", score, query, term)
+	}
+}
+
+func TestScoreSimpleFuzzy1(t *testing.T) {
+	for _, tc := range []FuzzyTestCase1{
+		{Query: "abstracted", Term: "abstracted", Score: 200},
+		{Query: "abstracted", Term: "abstract", Score: 120},
+		{Query: "abstracted", Term: "abstrac", Score: 80},
+
+		{Query: "signature", Term: "signature", Score: 200},
+		{Query: "signature", Term: "signatur", Score: 154},
+		{Query: "signature", Term: "signature tune", Score: 140},
+		{Query: "signature", Term: "key signature", Score: 76},
+		{Query: "signature", Term: "signatory", Score: 110},
+		{Query: "signature", Term: "signatu", Score: 110},
+		{Query: "signature", Term: "signat", Score: 66},
+		{Query: "signature", Term: "signa", Score: 0},
+		{Query: "signature", Term: "sign", Score: 0},
+		{Query: "gold", Term: "gold leaf", Score: 140},
+		{Query: "gold leaf", Term: "gold lef", Score: 154},
+		{Query: "gold lef", Term: "gold leaf", Score: 154},
+		{Query: "gold lef", Term: "gold", Score: 0},
+		{Query: "gold lef", Term: "gold beetle", Score: 0},
+		{Query: "gold lef", Term: "green gold", Score: 0},
+	} {
+		query := tc.Query
+		term := tc.Term
+		buff := make([]uint16, 500)
+		args := &ScoreSimpleFuzzyArgs{
+			Query:      query,
+			QueryRunes: []rune(query),
+		}
+
+		score := ScoreSimpleFuzzy([]string{term}, args, buff)
+		if score != tc.Score {
+			t.Errorf(
+				"score=%v != %v, query=%#v, term=%#v",
 				score,
 				tc.Score,
 				query,

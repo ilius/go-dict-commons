@@ -13,6 +13,11 @@ type ScoreFuzzyArgs struct {
 	MainWordIndex  int
 }
 
+type ScoreSimpleFuzzyArgs struct {
+	Query      string
+	QueryRunes []rune
+}
+
 // stretchScore converts 100..200 range to 0..200
 func stretchScore(score uint8) uint8 {
 	if score < 100 {
@@ -85,6 +90,47 @@ func ScoreFuzzy(
 		}
 		if bestWordScore > bestScore {
 			bestScore = bestWordScore
+		}
+	}
+	return bestScore
+}
+
+// ScoreSimpleFuzzy returns fuzzy score between query and term list
+// Make sure you don't use the same buff in multiple goroutines
+// This is the same as ScoreFuzzy for single-word terms
+// It does not look into words of a term. But it does check if term
+// starts with the query.
+func ScoreSimpleFuzzy(
+	terms []string,
+	args *ScoreSimpleFuzzyArgs,
+	buff []uint16,
+) uint8 {
+	bestScore := uint8(0)
+	for termIndex, termOrig := range terms {
+		// subtract: to give better scores for terms that come first
+		// after 3rd term, they are all treated the same
+		subtract := uint8(3)
+		if termIndex < 3 {
+			subtract = uint8(termIndex)
+		}
+		term := strings.ToLower(termOrig)
+		score := stretchScore(Similarity(
+			args.QueryRunes,
+			[]rune(term),
+			buff,
+			subtract,
+		))
+		if score > bestScore {
+			bestScore = score
+		}
+		if strings.HasPrefix(term, args.Query) {
+			deltaLen := len(term) - len(args.Query)
+			if deltaLen > 0 {
+				score2 := 200 - int(subtract) - deltaLen*12
+				if score2 > 0 && uint8(score2) > bestScore {
+					bestScore = uint8(score2)
+				}
+			}
 		}
 	}
 	return bestScore
