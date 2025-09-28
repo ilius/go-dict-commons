@@ -46,7 +46,13 @@ func TestScoreFuzzy1(t *testing.T) {
 
 		score := ScoreFuzzy([]string{term}, args, buff)
 		if score != tc.Score {
-			t.Errorf("TestScoreFuzzy: score=%v, query=%#v, term=%#v", score, query, term)
+			t.Errorf(
+				"TestScoreFuzzy: score=%v != %v, query=%#v, term=%#v",
+				score,
+				tc.Score,
+				query,
+				term,
+			)
 			t.Fail()
 		}
 		// t.Logf("TestScoreFuzzy: score=%v, query=%#v, term=%#v", score, query, term)
