@@ -14,13 +14,24 @@ type FuzzyTestCase1 struct {
 
 func TestScoreFuzzy1(t *testing.T) {
 	for _, tc := range []FuzzyTestCase1{
+		{Query: "abstracted", Term: "abstracted", Score: 200},
+		{Query: "abstracted", Term: "abstract", Score: 120},
+		{Query: "abstracted", Term: "abstrac", Score: 80},
+
 		{Query: "signature", Term: "signature", Score: 200},
-		{Query: "signature", Term: "signature tune", Score: 171},
-		{Query: "signature", Term: "key signature", Score: 163},
-		{Query: "gold lef", Term: "gold leaf", Score: 177},
-		{Query: "gold lef", Term: "gold", Score: 172},
-		{Query: "gold lef", Term: "gold beetle", Score: 171},
-		{Query: "gold lef", Term: "green gold", Score: 163},
+		{Query: "signature", Term: "signatur", Score: 154},
+		{Query: "signature", Term: "signature tune", Score: 142},
+		{Query: "signature", Term: "key signature", Score: 126},
+		{Query: "signature", Term: "signatory", Score: 110},
+		{Query: "signature", Term: "signatu", Score: 110},
+		{Query: "signature", Term: "signat", Score: 66},
+		{Query: "signature", Term: "signa", Score: 0},
+		{Query: "signature", Term: "sign", Score: 0},
+		{Query: "gold leaf", Term: "gold lef", Score: 154},
+		{Query: "gold lef", Term: "gold leaf", Score: 154},
+		{Query: "gold lef", Term: "gold", Score: 144},
+		{Query: "gold lef", Term: "gold beetle", Score: 142},
+		{Query: "gold lef", Term: "green gold", Score: 126},
 	} {
 		query := tc.Query
 		term := tc.Term

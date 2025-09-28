@@ -13,9 +13,12 @@ type ScoreFuzzyArgs struct {
 	MainWordIndex  int
 }
 
-// ScoreFuzzy ...
+// ScoreFuzzy returns fuzzy score between query and term list
 // Make sure you don't use the same buff in multiple goroutines
-// returns a number between 50 and 200
+// Returns a number in 0..200 range, but 80 is a good minimum score to use
+// which is equivalent of %70 similarity in single-word query and term
+// Because we spread out %50 .. %100 similarity to scores of 100..200
+// for example "abstracted" is %70 similar to "abstrac" query, but gets score of 80
 func ScoreFuzzy(
 	terms []string,
 	args *ScoreFuzzyArgs,
@@ -33,7 +36,7 @@ func ScoreFuzzy(
 		}
 		term := strings.ToLower(termOrig)
 		if term == args.Query { // exact match, done
-			return 200 - subtract
+			return 200 - subtract*2
 		}
 		words := strings.Split(term, " ")
 		if len(words) < args.MinWordCount { // term has too few words, skip
@@ -63,7 +66,7 @@ func ScoreFuzzy(
 				bestWordScore = wordScore
 			}
 		}
-		if bestWordScore < 50 { // don't waste any more time on this term
+		if bestWordScore < 100 { // don't waste any more time on this term
 			continue
 		}
 		if args.QueryWordCount > 1 {
@@ -76,5 +79,8 @@ func ScoreFuzzy(
 			bestScore = bestWordScore
 		}
 	}
-	return bestScore
+	if bestScore <= 100 {
+		return 0
+	}
+	return bestScore - (200 - bestScore)
 }
