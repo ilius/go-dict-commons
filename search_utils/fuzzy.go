@@ -50,7 +50,7 @@ func ScoreFuzzy(
 		if len(words) < args.MinWordCount { // term has too few words, skip
 			continue
 		}
-		score := Similarity(args.QueryRunes, []rune(term), buff, subtract)
+		score := stretchScore(Similarity(args.QueryRunes, []rune(term), buff, subtract))
 		if score > bestScore {
 			bestScore = score
 			if score >= 180 { // term is good enough without looking at its words
@@ -59,36 +59,33 @@ func ScoreFuzzy(
 		}
 		bestWordScore := uint8(0)
 		for wordI, word := range words {
-			wordScore := Similarity(queryMainWord, []rune(word), buff, subtract)
-			if wordScore < 50 {
+			wordScore := stretchScore(Similarity(queryMainWord, []rune(word), buff, subtract))
+			if wordScore == 0 {
 				continue
 			}
 			if wordI == mainWordIndex {
 				wordScore -= 1
 				// just to differentiate between word match and whole term match
 			} else {
-				// matching word's position is not the same as query, %5 penalty
-				wordScore -= wordScore / 20
+				// matching word's position is not the same as query, %10 penalty
+				wordScore -= wordScore / 10
 			}
 			if wordScore > bestWordScore {
 				bestWordScore = wordScore
 			}
 		}
-		if bestWordScore < 100 { // don't waste any more time on this term
-			continue
-		}
+		// To make sure word scores don't precede small misspells on two word query
+		// for example when you type "gold lef", term "gold leaf" should come
+		// before term "gold"
 		if args.QueryWordCount > 1 {
-			// To make sure word scores don't precede small misspells on two word query
-			// for example when you type "gold lef", term "gold leaf" should come
-			// before term "gold"
-			bestWordScore = bestWordScore - 25 - uint8(len(words))
+			tmpScore := int(bestWordScore) - len(words) - 55
+			if tmpScore > 0 {
+				bestWordScore = uint8(tmpScore)
+			}
 		}
 		if bestWordScore > bestScore {
 			bestScore = bestWordScore
 		}
 	}
-	if bestScore <= 100 {
-		return 0
-	}
-	return stretchScore(bestScore)
+	return bestScore
 }
