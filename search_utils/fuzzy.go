@@ -13,6 +13,14 @@ type ScoreFuzzyArgs struct {
 	MainWordIndex  int
 }
 
+// stretchScore converts 100..200 range to 0..200
+func stretchScore(score uint8) uint8 {
+	if score < 100 {
+		return 0
+	}
+	return score - (200 - score)
+}
+
 // ScoreFuzzy returns fuzzy score between query and term list
 // Make sure you don't use the same buff in multiple goroutines
 // Returns a number in 0..200 range, but 80 is a good minimum score to use
@@ -82,5 +90,5 @@ func ScoreFuzzy(
 	if bestScore <= 100 {
 		return 0
 	}
-	return bestScore - (200 - bestScore)
+	return stretchScore(bestScore)
 }
