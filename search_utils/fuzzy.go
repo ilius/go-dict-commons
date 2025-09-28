@@ -81,7 +81,7 @@ func ScoreFuzzy(
 			// To make sure word scores don't precede small misspells on two word query
 			// for example when you type "gold lef", term "gold leaf" should come
 			// before term "gold"
-			bestWordScore = uint8(float64(bestWordScore)*0.87) - uint8(len(words))
+			bestWordScore = bestWordScore - 25 - uint8(len(words))
 		}
 		if bestWordScore > bestScore {
 			bestScore = bestWordScore

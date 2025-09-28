@@ -20,7 +20,7 @@ func TestScoreFuzzy1(t *testing.T) {
 
 		{Query: "signature", Term: "signature", Score: 200},
 		{Query: "signature", Term: "signatur", Score: 154},
-		{Query: "signature", Term: "signature tune", Score: 142},
+		{Query: "signature", Term: "signature tune", Score: 144},
 		{Query: "signature", Term: "key signature", Score: 126},
 		{Query: "signature", Term: "signatory", Score: 110},
 		{Query: "signature", Term: "signatu", Score: 110},
@@ -29,8 +29,8 @@ func TestScoreFuzzy1(t *testing.T) {
 		{Query: "signature", Term: "sign", Score: 0},
 		{Query: "gold leaf", Term: "gold lef", Score: 154},
 		{Query: "gold lef", Term: "gold leaf", Score: 154},
-		{Query: "gold lef", Term: "gold", Score: 144},
-		{Query: "gold lef", Term: "gold beetle", Score: 142},
+		{Query: "gold lef", Term: "gold", Score: 146},
+		{Query: "gold lef", Term: "gold beetle", Score: 144},
 		{Query: "gold lef", Term: "green gold", Score: 126},
 	} {
 		query := tc.Query
