@@ -23,4 +23,5 @@ type Dictionary interface {
 	SearchRegex(query string, workerCount int, timeout time.Duration) ([]*SearchResultLow, error)
 	SearchGlob(query string, workerCount int, timeout time.Duration) ([]*SearchResultLow, error)
 	SearchWordMatch(query string, workerCount int, timeout time.Duration) []*SearchResultLow
+	SearchExact(query string, workerCount int, timeout time.Duration) []*SearchResultLow
 }
